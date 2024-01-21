@@ -25,20 +25,11 @@ class RootGUI():
 
 # Classe de comunicação com o microcontrolador
 class ComGUI():
-    def __init__(self, root):
-        #Parameetros de comunicação
-        self.IP = "000.000.000.000"
-        self.PORT = 65535
-        self.ADDR = (self.IP, self.PORT)
-        self.HEADER = 64
-        self.FORMAT = 'utf-8'
-        self.DISCONECT_MSG = 'DISCONECT'
-        self.MESSAGE_END = "lf"
-
-
-
+    
+    def __init__(self, root, tcp):
         # Initializing the Widgets
         self.root = root
+        self.tcp = tcp
         self.frame = LabelFrame(root, text="Tcp Socket",
                                 padx=5, pady=5, bg="white")
         self.server_ip = Label(
@@ -80,40 +71,15 @@ class ComGUI():
         self.IPselect = Entry(self.frame, width=30)
         self.Portselect = Entry(self.frame, width=30)
 
-    def handle_clients(self, conn, addr):
-        print(f"New connection: {addr} connected")
-        connected = True
-        while connected:
-            msg = str(conn.recv(self.HEADER).decode(self.FORMAT))
-            if self.MESSAGE_END in msg:
-                message = msg.split(self.MESSAGE_END)[0]
-                if message == self.DISCONECT_MSG:
-                    connected = False
-                    print('Disconectando')
-                print(f'[{addr} : {message}]')
-        conn.close()
-
-    def ServerStart(self):
-        self.tcpserver.listen()
-        print(f"Server is listening [{self.server_ip}]")
-        while True:
-            con, addr = self.tcpserver.accept()
-            thread = threading.Thread(target=self.handle_clients, args=(con, addr))
-            thread.start()
-            print(f'Clients: {threading.active_count() - 2}')
-
+        self.IPselect.insert(0,"192.168.0.100")
+        self.Portselect.insert(0,"5050")
 
     def tcp_connect(self):
-        if is_valid_ip_format(self.IPselect.get()) and ( (int( self.Portselect.get()) > 0) and (int(self.Portselect.get())< 65535 )):
-
-            self.IP = str(self.IPselect.get())
-            self.PORT = int(self.Portselect.get())
-            self.ADDR = (self.IP, self.PORT)
-            print(self.ADDR)
-            self.tcpserver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.tcpserver.bind(self.ADDR)
-            threadTCP = threading.Thread(target=self.ServerStart)
-            threadTCP.start()
+        ip = self.IPselect.get()
+        port = int (self.Portselect.get())
+        if is_valid_ip_format(ip) and (( port > 0) and (port< 65535 )):
+            print(f"TRYING TO CONNECT TO SERVER  IP {ip} port {port}")
+            self.tcp.start(ip, port)
 
 
 if __name__ == "__main__":

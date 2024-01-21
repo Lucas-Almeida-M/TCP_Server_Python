@@ -3,6 +3,8 @@ from tcpserver import TCPServer
 
 RootMaster = RootGUI()
 
-ComMaster = ComGUI(RootMaster.root)
+TcpServer = TCPServer()
+
+ComMaster = ComGUI(RootMaster.root, TcpServer)
 
 RootMaster.root.mainloop()
