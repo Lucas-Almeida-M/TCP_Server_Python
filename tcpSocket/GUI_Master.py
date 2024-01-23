@@ -5,6 +5,10 @@ import re
 import socket
 import threading
 
+import matplotlib.pyplot as plt  # pip install matplotlib
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
+                                               NavigationToolbar2Tk)
+
 
 def is_valid_ip_format(input_string):
     ip_pattern = re.compile(r'^(\d{1,3}\.){3}\d{1,3}$')
@@ -13,8 +17,6 @@ def is_valid_ip_format(input_string):
         return True
     else:
         return False
-
-
 
 class RootGUI():
     def __init__(self):
@@ -33,16 +35,14 @@ class RootGUI():
         self.root.destroy()
         exit(2)
         
-
-
-
 # Classe de comunicação com o microcontrolador
 class ComGUI():
     
-    def __init__(self, root, tcp):
+    def __init__(self, root, tcp, data):
         # Initializing the Widgets
         self.root = root
         self.tcp = tcp
+        self.data = data
         self.frame = LabelFrame(root, text="Tcp Socket",
                                 padx=5, pady=5, bg="white")
         self.server_ip = Label(
@@ -93,16 +93,17 @@ class ComGUI():
         if is_valid_ip_format(ip) and (( port > 0) and (port< 65535 )):
             print(f"TRYING TO CONNECT TO SERVER  IP {ip} port {port}")
             try:
-                self.tcp.start(ip, port)
-                self.conn = ConnGUI(self.root, self.tcp)
+                self.conn = ConnGUI(self.root, self.tcp, self.data)
+                self.tcp.start(ip, port, self.conn)
+                
             except:
                 pass
 
-
 class ConnGUI():
-    def __init__(self, root, tcp) :
+    def __init__(self, root, tcp, data) :
         self.root = root
         self.tcp = tcp
+        self.data = data
         self.frame = LabelFrame(root, text="Connection Manager",
                             padx=5, pady=5, bg="white", width=60)
         self.drop_bds_label = Label(
@@ -152,6 +153,7 @@ class ConnGUI():
 
         # Extending the GUI
         self.ConnGUIOpen()
+        # self.chartMaster = displayGUI(self.root, self.serial, self.data)
 
 
     def ConnGUIOpen(self):
@@ -219,6 +221,7 @@ class ConnGUI():
         pass
 
     def new_chart(self):
+        self.chartMaster.AddChannelMaster()
         pass
 
     def kill_chart(self):
@@ -226,6 +229,112 @@ class ConnGUI():
 
     def save_data(self):
         pass
+
+class displayGUI():
+    def __init__(self, root, tcp, data) :
+        self.root = root
+        self.tcp = tcp
+        self.data = data
+        
+        self.frames = []
+        self.framesCol = 0
+        self.frames.Row = 4
+        self.totalFrames = 0
+
+        self.figs = []
+
+        # The control Frame
+        self.ControlFrames = []
+
+    def AddChannelMaster(self):
+        '''
+        This method is a group of methods that will be used to generate a new frame
+        that will include a chart and all the control Widgets
+        '''
+        self.AddMasterFrame()
+        # self.AdjustRootFrame()
+        self.AddGraph()
+        self.AddBtnFrame()
+
+    def AddMasterFrame(self):
+        '''
+        This Method will add a new master frame wich will control all the element inside
+        including the chart, the btns and the Drops
+        '''
+        self.frames.append(LabelFrame(self.root, text=f"Display Manager-{len(self.frames)+1}",
+                                    pady=5, padx=5, bg="white"))
+        self.totalframes = len(self.frames)-1
+        # print(f'Total frames:{self.totalframes}')
+        if self.totalframes % 2 == 0:
+            self.framesCol = 0
+        else:
+            self.framesCol = 9
+        # print(f'Col: {self.framesCol}')
+        self.framesRow = 4 + 4 * int(self.totalframes / 2)
+        # print(f'Row: {self.framesRow}')
+        self.frames[self.totalframes].grid(padx=5,
+                                        column=self.framesCol, row=self.framesRow, columnspan=8, sticky=NW)
+
+    def AdjustRootFrame(self):
+        '''
+        This Method will generate the code related to adjusting
+        the main root Gui based on the number of added GUI
+        '''
+        self.totalframes = len(self.frames)-1
+        if self.totalframes > 0:
+            RootW = 800*2
+
+        else:
+            RootW = 800
+
+        if self.totalframes+1 == 0:
+            RootH = 120
+        else:
+            RootH = 120 + 430 * (int(self.totalframes/2)+1)
+        self.root.geometry(f"{RootW}x{RootH}")
+
+    def AddGraph(self):
+        '''
+            This method will add setup the figure and the plot that will be used later on
+            All the data will be inside the list to get an easier access later on
+            '''
+        # Setting up the plot for the each Frame
+        self.figs.append([])
+        # Initialize figures
+        self.figs[self.totalframes].append(plt.Figure(figsize=(7, 5), dpi=80))
+        # Initialize the plot
+        self.figs[self.totalframes].append(
+            self.figs[self.totalframes][0].add_subplot(111))
+        # Initialize the chart
+        self.figs[self.totalframes].append(FigureCanvasTkAgg(
+            self.figs[self.totalframes][0], master=self.frames[self.totalframes]))
+
+        self.figs[self.totalframes][2].get_tk_widget().grid(
+            column=1, row=0, columnspan=4, rowspan=17,  sticky=N)
+
+    def AddBtnFrame(self):
+        '''
+        Method to add the bottons to be used to add further channels 
+        the button need to use a partial lib when calling the libary so it can keep the right 
+        Widget target --> Further details in the YouTube WeeW-Stack
+        '''
+        btnH = 2
+        btnW = 4
+        self.ControlFrames.append([])
+        self.ControlFrames[self.totalframes].append(LabelFrame(self.frames[self.totalframes],
+                                                            pady=5, bg="white"))
+        self.ControlFrames[self.totalframes][0].grid(
+            column=0, row=0, padx=5, pady=5,  sticky=N)
+
+        self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="+",
+                                                        bg="white", width=btnW, height=btnH))
+        self.ControlFrames[self.totalframes][1].grid(
+            column=0, row=0, padx=5, pady=5)
+        self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="-",
+                                                        bg="white", width=btnW, height=btnH))
+        self.ControlFrames[self.totalframes][2].grid(
+            column=1, row=0, padx=5, pady=5)
+
 
 if __name__ == "__main__":
     RootGUI()
