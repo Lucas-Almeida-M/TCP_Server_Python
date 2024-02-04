@@ -41,7 +41,7 @@ class ComGUI():
         self.tcp = tcp
         self.data = data
         self.frame = LabelFrame(root, text="Tcp Socket",
-                                padx=5, pady=5, bg="white")
+                                padx=5, pady=5, bg="yellow")
         self.server_ip = Label(
             self.frame, text="Server IP: ", bg="white", width=15, anchor="w")
         self.server_port = Label(
@@ -82,7 +82,7 @@ class ComGUI():
         self.Portselect = Entry(self.frame, width=30)
 
         self.IPselect.insert(0,"192.168.0.100")
-        self.Portselect.insert(0,"5050")
+        self.Portselect.insert(0,"8000")
 
     def tcp_connect(self):
         ip = self.IPselect.get()
@@ -94,7 +94,7 @@ class ComGUI():
                 self.btn_connect["text"] = "Started"
                 self.btn_connect["state"] = "disabled"
 
-                self.tcp.start(ip, port, self.conn)
+                self.tcp.start(ip, port, self.conn, self.data)
                 
             except:
                 pass
@@ -118,16 +118,16 @@ class ConnGUI():
         self.tcp = tcp
         self.data = data
         self.frame = LabelFrame(root, text="Connection Manager",
-                            padx=5, pady=5, bg="white", width=60)
+                            padx=5, pady=5, bg="green", width=60)
         self.drop_bds_label = Label(
             self.frame, text="Board Select: ", bg="white", width=15, anchor="w")
         self.BoardSelectionMenu()
         # self.sync_status = Label(
         #     self.frame, text="..Sync..", bg="white", fg="orange", width=5)
         
-        self.ch_label = Label(    
+        self.active_devices_label = Label(    
             self.frame, text="Active Devices: ", bg="white", width=15, anchor="w")
-        self.ch_status = Label(
+        self.active_devices = Label(
             self.frame, text="0", bg="white", fg="orange", width=5)
 
         # self.btn_add_chart = Button(self.frame, text="+", state="active",
@@ -137,50 +137,55 @@ class ConnGUI():
         # self.btn_kill_chart = Button(self.frame, text="-", state="active",
         #                             width=5, bg="white", fg="#CC252C",
         #                             command=self.kill_chart)
-        self.device_check0_var = IntVar()
-        self.device_check0 = Checkbutton(self.frame, text="Device 0", variable=self.device_check0_var,
-                                    onvalue=1, offvalue=0, bg="white", state="active",
-                                    command=self.display_graphs)
+
+        self.device_check_var = []
+        self.device_check = []
+
+        self.device_check_var.append(IntVar())
+       
+        self.device_check.append( Checkbutton(self.frame, text="Device 0", variable=self.device_check_var[0],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs))
         
-        self.device_check1_var = IntVar()
-        self.device_check1 = Checkbutton(self.frame, text="Device 1", variable=self.device_check1_var,
-                                    onvalue=1, offvalue=0, bg="white", state="active",
-                                    command=self.display_graphs)
+        self.device_check_var.append(IntVar())
+        self.device_check.append( Checkbutton(self.frame, text="Device 1", variable=self.device_check_var[1],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs) )
         
-        self.device_check2_var = IntVar()
-        self.device_check2 = Checkbutton(self.frame, text="Device 2", variable=self.device_check2_var,
-                                    onvalue=1, offvalue=0, bg="white", state="active",
-                                    command=self.display_graphs)
+        self.device_check_var.append(IntVar())
+        self.device_check.append( Checkbutton(self.frame, text="Device 2", variable=self.device_check_var[2],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs))
         
-        self.device_check3_var = IntVar()
-        self.device_check3 = Checkbutton(self.frame, text="Device 3", variable=self.device_check3_var,
-                                    onvalue=1, offvalue=0, bg="white", state="active",
-                                    command=self.display_graphs)
+        self.device_check_var.append(IntVar())
+        self.device_check.append(Checkbutton(self.frame, text="Device 3", variable=self.device_check_var[3],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs))
         
-        self.device_check4_var = IntVar()
-        self.device_check4 = Checkbutton(self.frame, text="Device 4", variable=self.device_check4_var,
-                                    onvalue=1, offvalue=0, bg="white", state="active",
-                                    command=self.display_graphs)
+        self.device_check_var.append(IntVar())
+        self.device_check.append(Checkbutton(self.frame, text="Device 4", variable=self.device_check_var[4],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs))
         
-        self.device_check5_var = IntVar()
-        self.device_check5 = Checkbutton(self.frame, text="Device 5", variable=self.device_check5_var,
-                                    onvalue=1, offvalue=0, bg="white", state="active",
-                                    command=self.display_graphs)
+        self.device_check_var.append(IntVar())
+        self.device_check.append( Checkbutton(self.frame, text="Device 5", variable=self.device_check_var[5],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs))
         
-        self.device_check6_var = IntVar()
-        self.device_check6 = Checkbutton(self.frame, text="Device 6", variable=self.device_check6_var,
-                                    onvalue=1, offvalue=0, bg="white", state="active",
-                                    command=self.display_graphs)
+        self.device_check_var.append(IntVar())
+        self.device_check.append( Checkbutton(self.frame, text="Device 6", variable=self.device_check_var[6],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs))
         
-        self.device_check7_var = IntVar()
-        self.device_check7 = Checkbutton(self.frame, text="Device 7", variable=self.device_check7_var,
-                                    onvalue=1, offvalue=0, bg="white", state="active",
-                                    command=self.display_graphs)
+        self.device_check_var.append(IntVar())
+        self.device_check.append( Checkbutton(self.frame, text="Device 7", variable=self.device_check_var[7],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs))
         
 
 
         self.btn_start_stream = Button(self.frame, text="Start", state="active",
-                                    width=5, command=self.start_stream)
+                                    width=5, command=self.display_graphs)
 
         self.btn_stop_stream = Button(self.frame, text="Stop", state="disabled",
                                     width=5, command=self.stop_stream)
@@ -214,25 +219,25 @@ class ConnGUI():
         Method to display all the widgets 
         '''
         # self.root.geometry("1080x720")
-        self.frame.grid(row=0, column=4, rowspan=3,
-                        columnspan=7, padx=5, pady=5, sticky='nsew')
+        self.frame.grid(row=0, column=3, rowspan=3,
+                        columnspan=18, padx=5, pady=5, sticky='nsew')
 
         self.drop_bds_label.grid(column=1, row=1)
         self.drop_bds.grid(column=2, row=1, padx=(0, 40))
 
-        self.ch_label.grid(column=1, row=2)
-        self.ch_status.grid(column=2, row=2,pady= 5, padx=(0, 40))
+        self.active_devices_label.grid(column=1, row=2)
+        self.active_devices.grid(column=2, row=2,pady= 5, padx=(0, 40))
 
         # self.btn_add_chart.grid(column=3, row=1, padx=self.padx)
         # self.btn_kill_chart.grid(column=3, row=2, padx=self.padx)
-        self.device_check0.grid(column=4,  row=1, columnspan=1)
-        self.device_check1.grid(column=6,  row=1, columnspan=1)
-        self.device_check2.grid(column=8,  row=1, columnspan=1)
-        self.device_check3.grid(column=10, row=1, columnspan=1)
-        self.device_check4.grid(column=4,  row=2, columnspan=1)
-        self.device_check5.grid(column=6,  row=2, columnspan=1)
-        self.device_check6.grid(column=8,  row=2, columnspan=1)
-        self.device_check7.grid(column=10, row=2, columnspan=1)
+        self.device_check[0].grid(column=4,  row=1, columnspan=1)
+        self.device_check[1].grid(column=6,  row=1, columnspan=1)
+        self.device_check[2].grid(column=8,  row=1, columnspan=1)
+        self.device_check[3].grid(column=10, row=1, columnspan=1)
+        self.device_check[4].grid(column=4,  row=2, columnspan=1)
+        self.device_check[5].grid(column=6,  row=2, columnspan=1)
+        self.device_check[6].grid(column=8,  row=2, columnspan=1)
+        self.device_check[7].grid(column=10, row=2, columnspan=1)
 
 
         self.btn_start_stream.grid(column=12, row=1, padx=self.padx)
@@ -325,7 +330,6 @@ class displayGUI():
         that will include a chart and all the control Widgets
         '''
         self.AddMasterFrame()
-        # self.AdjustRootFrame()
         self.AddGraph()
         self.AddBtnFrame()
 
@@ -336,19 +340,23 @@ class displayGUI():
         
         '''
         self.frames.append(LabelFrame(self.root, text=f"Display Manager-{len(self.frames)+1}",
-                                      pady=5, padx=5, bg="white"))
+                                      pady=5, padx=5, bg="grey"))
         self.totalframes = len(self.frames)-1
         # print(f'Total frames:{self.totalframes}')
         if self.totalframes % 2 == 0:
             self.framesCol = 0
         else:
-            self.framesCol = 11
+            self.framesCol = 20
         # print(f'Col: {self.framesCol}')
         self.framesRow = 4 + 4 * int(self.totalframes / 2)
         # print(f'Row: {self.framesRow}')
-        # if self.framesCol == 16:
-        self.frames[self.totalframes].grid(padx=5,
-        column=self.framesCol, row=self.framesRow,columnspan = 11, sticky=NW)
+        if self.framesCol == 20:
+            self.frames[self.totalframes].grid(padx=5,
+            column=self.framesCol, row=self.framesRow,columnspan = 20, sticky=N)
+        else:
+
+            self.frames[self.totalframes].grid(padx=5,
+            column=self.framesCol, row=self.framesRow,columnspan = 20, sticky=NW)
         # else:
 
         #     self.frames[self.totalframes].grid(padx=5,
