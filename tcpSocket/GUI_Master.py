@@ -182,6 +182,16 @@ class ConnGUI():
                                     onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=self.display_graphs))
         
+        self.device_check_var.append(IntVar())
+        self.device_check.append( Checkbutton(self.frame, text="Device 8", variable=self.device_check_var[8],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs))
+        
+        self.device_check_var.append(IntVar())
+        self.device_check.append( Checkbutton(self.frame, text="Device 9", variable=self.device_check_var[9],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=self.display_graphs))
+        
 
 
         self.btn_start_stream = Button(self.frame, text="Start", state="active",
@@ -234,19 +244,21 @@ class ConnGUI():
         self.device_check[1].grid(column=6,  row=1, columnspan=1)
         self.device_check[2].grid(column=8,  row=1, columnspan=1)
         self.device_check[3].grid(column=10, row=1, columnspan=1)
-        self.device_check[4].grid(column=4,  row=2, columnspan=1)
-        self.device_check[5].grid(column=6,  row=2, columnspan=1)
-        self.device_check[6].grid(column=8,  row=2, columnspan=1)
-        self.device_check[7].grid(column=10, row=2, columnspan=1)
+        self.device_check[4].grid(column=12, row=1, columnspan=1)
+        self.device_check[5].grid(column=4,  row=2, columnspan=1)
+        self.device_check[6].grid(column=6,  row=2, columnspan=1)
+        self.device_check[7].grid(column=8,  row=2, columnspan=1)
+        self.device_check[8].grid(column=10, row=2, columnspan=1)
+        self.device_check[9].grid(column=12, row=2, columnspan=1)
 
 
-        self.btn_start_stream.grid(column=12, row=1, padx=self.padx)
-        self.btn_stop_stream.grid(column=12, row=2, padx=self.padx)
+        self.btn_start_stream.grid(column=13, row=1, padx=self.padx)
+        self.btn_stop_stream.grid(column=13, row=2, padx=self.padx)
 
-        self.save_check.grid(column=13, row=1, columnspan=2)
+        self.save_check.grid(column=14, row=1, columnspan=2)
         # self.separator.place(relx=0.65, rely=0, relwidth=0.001, relheight=1)
-        self.separator.place(relx=0.33, rely=-0.1, relwidth=0.001, relheight=1.1)
-        self.separator2.place(relx=0.79, rely=-0.1, relwidth=0.001, relheight=1.1)
+        self.separator.place(relx=0.30, rely=-0.1, relwidth=0.001, relheight=1.1)
+        self.separator2.place(relx=0.813, rely=-0.1, relwidth=0.001, relheight=1.1)
 
     def BoardSelectionMenu(self):
         self.clicked_bds = StringVar()
@@ -265,6 +277,14 @@ class ConnGUI():
             self.frame, self.clicked_bds, *bds, command=self.BoardSelectionAdjust)
         self.drop_bds.config(width=10)
 
+    def gui_sync_update(self):
+        client = "192.168.0.153"
+        self.active_devices["text"] = self.data.deviceSyncCount[client]
+        for key, value in self.data.deviceSyncStatus[client].items():
+            state = "active" if value else "disabled"
+            self.device_check[int(key) - 2]["state"] = state
+
+        pass
 
     def BoardSelectionAdjust(self, widget):
         self.board = self.clicked_bds.get()
