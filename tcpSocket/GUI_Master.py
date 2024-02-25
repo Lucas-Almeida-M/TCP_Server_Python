@@ -420,29 +420,83 @@ class displayGUI():
             column=1, row=0, columnspan=4, rowspan=17,  sticky=N)
 
     def AddBtnFrame(self):
-        '''
-        Method to add the bottons to be used to add further channels 
-        the button need to use a partial lib when calling the libary so it can keep the right 
-        Widget target --> Further details in the YouTube WeeW-Stack
-        '''
         btnH = 2
         btnW = 4
         self.ControlFrames.append([])
+        
         self.ControlFrames[self.totalframes].append(LabelFrame(self.frames[self.totalframes],
                                                             pady=5, bg="white"))
         self.ControlFrames[self.totalframes][0].grid(
             column=0, row=0, padx=5, pady=5,  sticky=N)
+        
+        self.ControlFrames[self.totalframes].append([])
 
-        self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="+",
-                                                        bg="white", width=btnW, height=btnH))
-        self.ControlFrames[self.totalframes][1].grid(
-            column=0, row=0, padx=5, pady=5)
-        self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="-",
-                                                        bg="white", width=btnW, height=btnH))
+        self.ControlFrames[self.totalframes][1].append(IntVar())
+        self.ControlFrames[self.totalframes][1].append(IntVar())
+        self.ControlFrames[self.totalframes][1].append(IntVar())
+        self.ControlFrames[self.totalframes][1].append(IntVar())
+        self.ControlFrames[self.totalframes][1].append(IntVar())
+        self.ControlFrames[self.totalframes][1].append(IntVar())
+        self.ControlFrames[self.totalframes][1].append(IntVar())
+        self.ControlFrames[self.totalframes][1].append(IntVar())
+
+        self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 0", variable=self.ControlFrames[self.totalframes][1][0],
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=self.ButtonSensorFunc))
+        self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 1", variable=self.ControlFrames[self.totalframes][1][1],
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=self.ButtonSensorFunc))
+        self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 2", variable=self.ControlFrames[self.totalframes][1][2],
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=self.ButtonSensorFunc))
+        self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 3", variable=self.ControlFrames[self.totalframes][1][3],
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=self.ButtonSensorFunc))
+        self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 4", variable=self.ControlFrames[self.totalframes][1][4],
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=self.ButtonSensorFunc))
+        self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 5", variable=self.ControlFrames[self.totalframes][1][5],
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=self.ButtonSensorFunc))
+        self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 6", variable=self.ControlFrames[self.totalframes][1][6],
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=self.ButtonSensorFunc))
+        self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 7", variable=self.ControlFrames[self.totalframes][1][7],
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=self.ButtonSensorFunc))
+        
         self.ControlFrames[self.totalframes][2].grid(
             column=1, row=0, padx=5, pady=5)
+        self.ControlFrames[self.totalframes][3].grid(
+            column=1, row=1, padx=5, pady=5)
+        self.ControlFrames[self.totalframes][4].grid(
+            column=1, row=2, padx=5, pady=5)
+        self.ControlFrames[self.totalframes][5].grid(
+            column=1, row=3, padx=5, pady=5)
+        self.ControlFrames[self.totalframes][6].grid(
+            column=1, row=4, padx=5, pady=5)
+        self.ControlFrames[self.totalframes][7].grid(
+            column=1, row=5, padx=5, pady=5)
+        self.ControlFrames[self.totalframes][8].grid(
+            column=1, row=6, padx=5, pady=5)
+        self.ControlFrames[self.totalframes][9].grid(
+            column=1, row=7, padx=5, pady=5)
+        
+        
+        # self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="+",
+        #                                                 bg="white", width=btnW, height=btnH))
+        # self.ControlFrames[self.totalframes][1].grid(
+        #     column=0, row=0, padx=5, pady=5)
+        # self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="-",
+        #                                                 bg="white", width=btnW, height=btnH))
+        # self.ControlFrames[self.totalframes][2].grid(
+        #     column=1, row=0, padx=5, pady=5)
 
-
+    def ButtonSensorFunc():
+        
+        pass
+    
+    
 if __name__ == "__main__":
     RootGUI()
     ComGUI()
