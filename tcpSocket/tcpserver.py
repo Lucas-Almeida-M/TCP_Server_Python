@@ -36,9 +36,11 @@ class TCPServer:
             print(msg)
             if self.MESSAGE_END in msg:
                 result = self.data.process_message( addr, msg)
-                match result:
+                match result[0]:
                     case self.MESSAGETYPE_SYNC:
                         self.GUI.gui_sync_update()
+                    case self.MESSAGETYPE_DATA:
+                        self.GUI.update_graph(addr, result[1])
         conn.close()
 
     def handle_connections(self):

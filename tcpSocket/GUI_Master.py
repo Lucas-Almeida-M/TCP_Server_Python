@@ -16,17 +16,14 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 
 class RootGUI():
     def __init__(self):
-        '''Initializing the root GUI and other comps of the program'''
         self.root = Tk()
         self.root.title("Data vizualizer")
-        self.root.geometry("1920x1080")
+        self.root.geometry("1500x1000")
         self.root.config(bg="white")
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def on_close(self):
-        # Your cleanup or termination logic here
-        # This function will be called when the window is closed
         print("Program closed")
         os.kill(os.getpid(), signal.SIGTERM)
         self.root.destroy()
@@ -41,15 +38,14 @@ class ComGUI():
         self.tcp = tcp
         self.data = data
         self.frame = LabelFrame(root, text="Tcp Socket",
-                                padx=5, pady=5, bg="yellow")
+                                padx=5, pady=5, bg="white")
         self.server_ip = Label(
             self.frame, text="Server IP: ", bg="white", width=15, anchor="w")
         self.server_port = Label(
             self.frame, text="Server Port: ", bg="white", width=15, anchor="w")
 
-        # Setup the Drop option menu
+
         self.ServerIPOptionMenu()
-        # self.ComOptionMenu()
 
         # Add the control buttons for refreshing the COMs & Connect
         self.btn_connect = Button(self.frame, text="Start Server",
@@ -63,9 +59,6 @@ class ComGUI():
         self.publish()
 
     def publish(self):
-        '''
-         Method to display all the Widget of the main frame
-        '''
         self.frame.grid(row=0, column=0, rowspan=3,
                         columnspan=3, padx=5, pady=5)
         self.server_ip.grid(column=1, row=2)
@@ -93,15 +86,13 @@ class ComGUI():
                 self.conn = ConnGUI(self.root, self.tcp, self.data)
                 self.btn_connect["text"] = "Started"
                 self.btn_connect["state"] = "disabled"
-
-                self.tcp.start(ip, port, self.conn, self.data)
                 
+                self.tcp.start(ip, port, self.conn, self.data)
             except:
                 pass
 
     def is_valid_ip_format(self,input_string):
         ip_pattern = re.compile(r'^(\d{1,3}\.){3}\d{1,3}$')
-
         if ip_pattern.match(input_string):
             return True
         else:
@@ -118,90 +109,83 @@ class ConnGUI():
         self.tcp = tcp
         self.data = data
         self.frame = LabelFrame(root, text="Connection Manager",
-                            padx=5, pady=5, bg="green", width=60)
+                            padx=5, pady=5, bg="white", width=60)
         self.drop_bds_label = Label(
             self.frame, text="Board Select: ", bg="white", width=15, anchor="w")
         self.BoardSelectionMenu()
-        # self.sync_status = Label(
-        #     self.frame, text="..Sync..", bg="white", fg="orange", width=5)
-        
+
         self.active_devices_label = Label(    
             self.frame, text="Active Devices: ", bg="white", width=15, anchor="w")
         self.active_devices = Label(
             self.frame, text="0", bg="white", fg="orange", width=5)
 
-        # self.btn_add_chart = Button(self.frame, text="+", state="active",
-        #                             width=5, bg="white", fg="#098577",
-        #                             command=self.new_chart)
-
-        # self.btn_kill_chart = Button(self.frame, text="-", state="active",
-        #                             width=5, bg="white", fg="#CC252C",
-        #                             command=self.kill_chart)
-
-        self.device_check_var = []
         self.device_check = []
+        self.device_check_var = []
+        self.device_check_active = []
 
         self.device_check_var.append(IntVar())
        
         self.device_check.append( Checkbutton(self.frame, text="Device 0", variable=self.device_check_var[0],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs))
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(0)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 1", variable=self.device_check_var[1],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs) )
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(1)) )
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 2", variable=self.device_check_var[2],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs))
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(2)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append(Checkbutton(self.frame, text="Device 3", variable=self.device_check_var[3],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs))
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(3)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append(Checkbutton(self.frame, text="Device 4", variable=self.device_check_var[4],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs))
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(4)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 5", variable=self.device_check_var[5],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs))
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(5)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 6", variable=self.device_check_var[6],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs))
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(6)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 7", variable=self.device_check_var[7],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs))
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(7)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 8", variable=self.device_check_var[8],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs))
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(8)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 9", variable=self.device_check_var[9],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=self.display_graphs))
+                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    command=lambda : self.chart_manager(9)))
         
 
 
         self.btn_start_stream = Button(self.frame, text="Start", state="active",
-                                    width=5, command=self.display_graphs)
+                                    width=5, command=self.new_chart)
 
-        self.btn_stop_stream = Button(self.frame, text="Stop", state="disabled",
-                                    width=5, command=self.stop_stream)
+        self.btn_stop_stream = Button(self.frame, text="Stop", state="active",
+                                    width=5, command=self.kill_chart)
+        # self.btn_stop_stream = Button(self.frame, text="Stop", state="disabled",
+        #                             width=5, command=self.stop_stream)
+        
         self.save = False
         self.SaveVar = IntVar()
-
         self.save_check = Checkbutton(self.frame, text="Save data", variable=self.SaveVar,
                                     onvalue=1, offvalue=0, bg="white", state="active",
                                     command=self.save_data)
@@ -217,12 +201,6 @@ class ConnGUI():
         self.ConnGUIOpen()
         self.chartMaster = displayGUI(self.root, self.tcp, self.data)
 
-    def display_graphs(self):
-        
-
-        self.chartMaster.AddChannelMaster()
-
-        pass
         
     def ConnGUIOpen(self):
         '''
@@ -286,18 +264,23 @@ class ConnGUI():
 
         pass
 
+    def update_graph(self, addr, id):
+
+        self.chartMaster.figs[]
+        index = buffer.index(number_to_find)
+        # for i in range (8):
+        #     X_data = [i for i in range (60)]
+        #     Y_data = self.data.clientsData[str(addr)][str(id)][i]
+            
+
+        pass
+
     def BoardSelectionAdjust(self, widget):
         self.board = self.clicked_bds.get()
         print (f"Board selected {self.board}")
 
-
-
-
     def ConnGUIClose(self):
-        '''
-        Method to close the connection GUI and destorys the widgets
-        '''
-        # Must destroy all the element so they are not kept in Memory
+
         for widget in self.frame.winfo_children():
             widget.destroy()
         self.frame.destroy()
@@ -313,15 +296,54 @@ class ConnGUI():
         self.btn_stop_stream["state"] = "disabled"
         pass
 
-    def new_chart(self):
-        self.chartMaster.AddChannelMaster()
+    def chart_manager(self, num):
+    
+        #Destroy the frames
+        for i in range(len(self.device_check_active)):
+            self.chartMaster.frames[i].destroy()
+        self.chartMaster.frames = []
+        self.chartMaster.figs = []
+        self.chartMaster.ControlFrames = []
+
+        # Create it again 
+        if (self.device_check_var[num].get()):
+            self.device_check_active.append(num)
+        else:
+            self.device_check_active.remove(num)
+
+        self.device_check_active.sort()
+        for i in range(len(self.device_check_active)):
+            self.new_chart(self.device_check_active[i])
+
+        if (len(self.device_check_active) == 4):
+            for i in range (10):
+                if(i not in self.device_check_active):
+                    self.device_check[i]["state"] = "disabled"
+        else:
+            for i in range (10):
+                self.device_check[i]["state"] = "active"
         pass
 
-    def kill_chart(self):
+    def new_chart(self, num):
+        self.chartMaster.AddChannelMaster(num)
+        pass
+
+    def kill_chart(self, num):
+        try:
+            if len(self.chartMaster.frames) > 0:
+                totalFrame = len(self.chartMaster.frames)-1
+                self.chartMaster.frames[totalFrame].destroy()
+                self.chartMaster.frames.pop()
+                self.chartMaster.figs.pop()
+                self.chartMaster.ControlFrames.pop()
+                # self.chartMaster.AdjustRootFrame()
+        except:
+            pass
+
         pass
 
     def save_data(self):
-        a = 3
+        self.data.saveData = self.SaveVar.get()
         pass
 
 
@@ -330,10 +352,7 @@ class displayGUI():
         self.root = root
         self.tcp = tcp
         self.data = data
-        # self.frame = LabelFrame(root, text="Graphs",
-        #                     padx=5, pady=5, bg="white", width=60)
-        # self.frame.grid(row=6, column=0, rowspan=20, padx=5, pady=5,sticky=NW)
-        
+
         self.frames = []
         self.framesCol = 0
         self.framesRow = 4
@@ -344,32 +363,25 @@ class displayGUI():
         # The control Frame
         self.ControlFrames = []
 
-    def AddChannelMaster(self):
-        '''
-        This method is a group of methods that will be used to generate a new frame
-        that will include a chart and all the control Widgets
-        '''
-        self.AddMasterFrame()
+    def AddChannelMaster(self, num):
+ 
+        self.AddMasterFrame(num)
         self.AddGraph()
         self.AddBtnFrame()
-
-    def AddMasterFrame(self):
-        '''
-        This Method will add a new master frame wich will control all the element inside
-        including the chart, the btns and the Drops
         
-        '''
-        self.frames.append(LabelFrame(self.root, text=f"Display Manager-{len(self.frames)+1}",
-                                      pady=5, padx=5, bg="grey"))
+    def AddMasterFrame(self,num):
+      
+        self.frames.append(LabelFrame(self.root, text=f"Device {num} [can ID: {num+2}]",
+                                      pady=5, padx=5, bg="white"))
         self.totalframes = len(self.frames)-1
-        # print(f'Total frames:{self.totalframes}')
+
         if self.totalframes % 2 == 0:
             self.framesCol = 0
         else:
             self.framesCol = 20
-        # print(f'Col: {self.framesCol}')
+    
         self.framesRow = 4 + 4 * int(self.totalframes / 2)
-        # print(f'Row: {self.framesRow}')
+   
         if self.framesCol == 20:
             self.frames[self.totalframes].grid(padx=5,
             column=self.framesCol, row=self.framesRow,columnspan = 20, sticky=N)
@@ -377,16 +389,10 @@ class displayGUI():
 
             self.frames[self.totalframes].grid(padx=5,
             column=self.framesCol, row=self.framesRow,columnspan = 20, sticky=NW)
-        # else:
 
-        #     self.frames[self.totalframes].grid(padx=5,
-        #     column=self.framesCol, row=self.framesRow,columnspan = 16, sticky=NW)
 
     def AdjustRootFrame(self):
-        '''
-        This Method will generate the code related to adjusting
-        the main root Gui based on the number of added GUI
-        '''
+
         self.totalframes = len(self.frames)-1
         if self.totalframes > 0:
             RootW = 800*2
@@ -401,14 +407,11 @@ class displayGUI():
         self.root.geometry(f"{RootW}x{RootH}")
 
     def AddGraph(self):
-        '''
-            This method will add setup the figure and the plot that will be used later on
-            All the data will be inside the list to get an easier access later on
-            '''
+
         # Setting up the plot for the each Frame
         self.figs.append([])
         # Initialize figures
-        self.figs[self.totalframes].append(plt.Figure(figsize=(7, 5), dpi=80))
+        self.figs[self.totalframes].append(plt.Figure(figsize=(8, 5), dpi=80))
         # Initialize the plot
         self.figs[self.totalframes].append(
             self.figs[self.totalframes][0].add_subplot(111))
@@ -482,17 +485,7 @@ class displayGUI():
         self.ControlFrames[self.totalframes][9].grid(
             column=1, row=7, padx=5, pady=5)
         
-        
-        # self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="+",
-        #                                                 bg="white", width=btnW, height=btnH))
-        # self.ControlFrames[self.totalframes][1].grid(
-        #     column=0, row=0, padx=5, pady=5)
-        # self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="-",
-        #                                                 bg="white", width=btnW, height=btnH))
-        # self.ControlFrames[self.totalframes][2].grid(
-        #     column=1, row=0, padx=5, pady=5)
-
-    def ButtonSensorFunc():
+    def ButtonSensorFunc(self):
         
         pass
     
