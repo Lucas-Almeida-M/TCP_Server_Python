@@ -28,6 +28,7 @@ class TCPServer:
     def handle_clients(self, conn, addr):
         print(f"New connection: {addr} connected")
         self.data.add_client(addr)
+        self.data.create_client_folder(addr)
         count = 0
         decodedMessage = []
         connected = True
@@ -35,12 +36,12 @@ class TCPServer:
             msg = str(conn.recv(self.HEADER).decode(self.FORMAT))
             print(msg)
             if self.MESSAGE_END in msg:
-                result = self.data.process_message( addr, msg)
-                match result[0]:
+                MT, id = self.data.process_message(addr, msg)
+                match MT:
                     case self.MESSAGETYPE_SYNC:
                         self.GUI.gui_sync_update()
                     case self.MESSAGETYPE_DATA:
-                        self.GUI.update_graph(addr, result[1])
+                        self.GUI.update_graph(addr, id)
         conn.close()
 
     def handle_connections(self):

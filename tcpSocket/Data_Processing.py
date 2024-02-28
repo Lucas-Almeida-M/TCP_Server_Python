@@ -2,6 +2,7 @@ import re
 import numpy as np
 import matplotlib
 import csv
+import os
 import time
 
 class DataProcess():
@@ -10,7 +11,6 @@ class DataProcess():
         self.MESSAGETYPE_DATA       = 1
         self.MESSAGETYPE_SYNC       = 2
         self.MESSAGETYPE_DISCONNECT = 3
-        self.colors = ["blue","orange","green","red","purple","brown","pink","yellow"]
         self.saveData = 0
         self.deviceSyncStatus = {}
         self.deviceSyncCount = {}
@@ -24,7 +24,7 @@ class DataProcess():
         pass
     
     def add_device_databuffer(self, addr, id):
-        self.clientsData[str(addr)][str(id)] = [[0] * 60 for _ in range(8)]
+        self.clientsData[str(addr)][id] = [[0] * 60 for _ in range(8)]
         pass
 
     def process_message( self, addr, mes):
@@ -33,9 +33,9 @@ class DataProcess():
                 match = re.search(r"@#([^\$]*)#\$([^\$]*)\$&(.*)&!", mes)
                 # match = re.search(r"@\$([^\$]*)\$&(.*)&!", mes)
                 if match:
-                    id = match.group(1)
+                    id = int(match.group(1))
                     MessageType = int (match.group(2))
-                    data = [int(s) for s in (match.group(3).split("&"))]
+                    data = [int(i) if self.is_number(i) else i for i in match.group(3).split("&")]
                     # print(MessageType)
                 match MessageType:
                     case self.MESSAGETYPE_CONFIG:
@@ -44,17 +44,19 @@ class DataProcess():
                         pass
                     case self.MESSAGETYPE_DATA:
 
-                        if (str(id) not in self.clientsData[str(addr)]):
+                        if (id not in self.clientsData[str(addr)]):
                             self.add_device_databuffer(str(addr), id)
                         print ("------------------------------------------")
                         for i in range(8):
-                            self.clientsData[str(addr)][str(id)][i] = [int(data[i])] + self.clientsData[str(addr)][str(id)][i][:-1]
-
-                            print(self.clientsData[str(addr)][str(id)][i])
+                            if data[i] != 'null':
+                                self.clientsData[str(addr)][id][i] = [int(data[i])] + self.clientsData[str(addr)][id][i][:-1]
+                            else:
+                                self.clientsData[str(addr)][id][i] = [0] + self.clientsData[str(addr)][id][i][:-1]
+                            print(self.clientsData[str(addr)][id][i])
                         
                         if (self.saveData):
                             try:
-                                file_path = f"base_de_dados_addr_{str(addr)}.csv"
+                                file_path = f"client_{str(addr)}/base_de_dados_id_{str(id)}.csv"
                                 with open(file_path, 'a', newline='') as csv_file:
                                     csv_writer = csv.writer(csv_file)
 
@@ -64,7 +66,8 @@ class DataProcess():
                                         csv_writer.writerow(fieldnames)
 
                                     # Append a new line for each set of values
-                                    buffer = [time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(id) ] + list(map(int, data))
+                                    
+                                    buffer = [time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(id) ] + list(map(lambda x: int(x) if self.is_number(x) else "-", data))
                                     
                                     csv_writer.writerow(buffer)
 
@@ -77,12 +80,12 @@ class DataProcess():
                         pass
                     case self.MESSAGETYPE_SYNC:
                         if (str(addr) not in self.clientsData):
-                            self.add_client(str(addr))     
+                            self.add_client(str(addr)) 
                         self.deviceSyncCount[str(addr)] = data[0]
                         for i in range (10):
                             self.deviceSyncStatus[str(addr)][str(i+2)] = data[i+1]
                             if (data[i+1]):
-                                if (str(i+2) not in self.clientsData[str(addr)]):
+                                if (int(i+2) not in self.clientsData[str(addr)]):
                                     self.add_device_databuffer(addr, i+2)
                                 self.deviceSyncStatus[str(addr)][str(i + 2)] = data[i+1]
                             
@@ -96,4 +99,14 @@ class DataProcess():
                 return MessageType, id 
             else:
                 return -1  # Error message  
+    def is_number(self, num):
+        try:
+            int(num)  # or int(s) for integers
+            return True
+        except ValueError:
+            return False
+        
+    def create_client_folder(self, addr):
+        if not os.path.exists(f"client_{str(addr)}"):
+            os.makedirs(f"client_{str(addr)}", exist_ok=True)
 

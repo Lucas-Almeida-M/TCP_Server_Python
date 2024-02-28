@@ -1,5 +1,6 @@
 import os
 import signal
+import numpy as np
 from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
@@ -108,6 +109,7 @@ class ConnGUI():
         self.root = root
         self.tcp = tcp
         self.data = data
+        self.colors = ["blue","orange","green","red","purple","brown","pink","yellow"]
         self.frame = LabelFrame(root, text="Connection Manager",
                             padx=5, pady=5, bg="white", width=60)
         self.drop_bds_label = Label(
@@ -126,52 +128,52 @@ class ConnGUI():
         self.device_check_var.append(IntVar())
        
         self.device_check.append( Checkbutton(self.frame, text="Device 0", variable=self.device_check_var[0],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(0)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 1", variable=self.device_check_var[1],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(1)) )
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 2", variable=self.device_check_var[2],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(2)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append(Checkbutton(self.frame, text="Device 3", variable=self.device_check_var[3],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(3)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append(Checkbutton(self.frame, text="Device 4", variable=self.device_check_var[4],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(4)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 5", variable=self.device_check_var[5],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(5)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 6", variable=self.device_check_var[6],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(6)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 7", variable=self.device_check_var[7],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(7)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 8", variable=self.device_check_var[8],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(8)))
         
         self.device_check_var.append(IntVar())
         self.device_check.append( Checkbutton(self.frame, text="Device 9", variable=self.device_check_var[9],
-                                    onvalue=1, offvalue=0, bg="white", state="active",
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(9)))
         
 
@@ -265,12 +267,34 @@ class ConnGUI():
         pass
 
     def update_graph(self, addr, id):
+        if ( (int(id)-2) in self.device_check_active):
+            self.chartMaster.figs[self.device_check_active.index(int(id)-2)][1].clear()
+            X_data = list (i for i in range (60))
+            # displayMax_Y = 0
+            # displayMin_Y = 0
+            # for i in range (8):
+            #     if (self.ControlFrames[self.chartMaster.figs.index(id-2)][1][i].get()):
+            #         d = self.data.clientsData[str(addr)][str(id)][i]
+            #         if (displayMax_Y < d.max()):
+            #             displayMax_Y = d.max()
 
-        self.chartMaster.figs[]
-        index = buffer.index(number_to_find)
-        # for i in range (8):
-        #     X_data = [i for i in range (60)]
-        #     Y_data = self.data.clientsData[str(addr)][str(id)][i]
+            #         if (displayMin_Y > d.min()):
+            #             displayMin_Y = d.min()
+                
+            # self.Ydisplay = np.linspace(displayMax_Y, displayMin_Y, 100)            
+            # self.Xdisplay = [i for i in range (60)]
+            self.chart = self.chartMaster.figs[self.device_check_active.index(int(id)-2)][1]
+            for i in range (8):
+                if (self.chartMaster.ControlFrames[self.device_check_active.index(int(id)-2)][1][i].get()):
+                    Y_data = self.data.clientsData[str(addr)][id][i]
+                    self.chart.plot(X_data, Y_data, color=self.colors[i],
+                        dash_capstyle='projecting', linewidth=1)
+            self.chartMaster.figs[self.device_check_active.index(int(id)-2)][1].grid(
+                    color='b', linestyle='-', linewidth=0.2)
+            self.chartMaster.figs[self.device_check_active.index(int(id)-2)][0].canvas.draw()
+            # for i in range (8):
+            #     X_data = [i for i in range (60)]
+            #     
             
 
         pass
