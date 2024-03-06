@@ -112,69 +112,70 @@ class ConnGUI():
         self.colors = ["blue","orange","green","red","purple","brown","pink","yellow"]
         self.frame = LabelFrame(root, text="Connection Manager",
                             padx=5, pady=5, bg="white", width=60)
+        self.bds = []
         self.drop_bds_label = Label(
             self.frame, text="Board Select: ", bg="white", width=15, anchor="w")
-        self.BoardSelectionMenu()
+        self.BoardSelectionMenu("default")
 
         self.active_devices_label = Label(    
             self.frame, text="Active Devices: ", bg="white", width=15, anchor="w")
         self.active_devices = Label(
             self.frame, text="0", bg="white", fg="orange", width=5)
 
-        self.device_check = []
-        self.device_check_var = []
+        self.device_check = {}
+        self.device_check_var = {}
         self.device_check_active = []
 
-        self.device_check_var.append(IntVar())
+        self.device_check_var[2] = IntVar()
        
-        self.device_check.append( Checkbutton(self.frame, text="Device 0", variable=self.device_check_var[0],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=lambda : self.chart_manager(0)))
-        
-        self.device_check_var.append(IntVar())
-        self.device_check.append( Checkbutton(self.frame, text="Device 1", variable=self.device_check_var[1],
-                                    onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=lambda : self.chart_manager(1)) )
-        
-        self.device_check_var.append(IntVar())
-        self.device_check.append( Checkbutton(self.frame, text="Device 2", variable=self.device_check_var[2],
+        self.device_check[2] = ( Checkbutton(self.frame, text="device [2]", variable=self.device_check_var[2],
                                     onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(2)))
         
-        self.device_check_var.append(IntVar())
-        self.device_check.append(Checkbutton(self.frame, text="Device 3", variable=self.device_check_var[3],
+        self.device_check_var[3] = IntVar()
+        self.device_check[3] = ( Checkbutton(self.frame, text="device [3]", variable=self.device_check_var[3],
                                     onvalue=1, offvalue=0, bg="white", state="disabled",
-                                    command=lambda : self.chart_manager(3)))
+                                    command=lambda : self.chart_manager(3)) )
         
-        self.device_check_var.append(IntVar())
-        self.device_check.append(Checkbutton(self.frame, text="Device 4", variable=self.device_check_var[4],
+        self.device_check_var[4] = IntVar()
+        self.device_check[4] = ( Checkbutton(self.frame, text="device [4]", variable=self.device_check_var[4],
                                     onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(4)))
         
-        self.device_check_var.append(IntVar())
-        self.device_check.append( Checkbutton(self.frame, text="Device 5", variable=self.device_check_var[5],
+        self.device_check_var[5] = IntVar()
+        self.device_check[5] = ( Checkbutton(self.frame, text="device [5]", variable=self.device_check_var[5],
                                     onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(5)))
         
-        self.device_check_var.append(IntVar())
-        self.device_check.append( Checkbutton(self.frame, text="Device 6", variable=self.device_check_var[6],
+        self.device_check_var[6] = IntVar()
+        self.device_check[6] = ( Checkbutton(self.frame, text="device [6]", variable=self.device_check_var[6],
                                     onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(6)))
         
-        self.device_check_var.append(IntVar())
-        self.device_check.append( Checkbutton(self.frame, text="Device 7", variable=self.device_check_var[7],
+        self.device_check_var[7] = IntVar()
+        self.device_check[7] = ( Checkbutton(self.frame, text="device [7]", variable=self.device_check_var[7],
                                     onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(7)))
         
-        self.device_check_var.append(IntVar())
-        self.device_check.append( Checkbutton(self.frame, text="Device 8", variable=self.device_check_var[8],
+        self.device_check_var[8] = IntVar()
+        self.device_check[8] = ( Checkbutton(self.frame, text="device [8]", variable=self.device_check_var[8],
                                     onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(8)))
         
-        self.device_check_var.append(IntVar())
-        self.device_check.append( Checkbutton(self.frame, text="Device 9", variable=self.device_check_var[9],
+        self.device_check_var[9] = IntVar()
+        self.device_check[9] = ( Checkbutton(self.frame, text="device [9]", variable=self.device_check_var[9],
                                     onvalue=1, offvalue=0, bg="white", state="disabled",
                                     command=lambda : self.chart_manager(9)))
+        
+        self.device_check_var[10] = IntVar()
+        self.device_check[10] = ( Checkbutton(self.frame, text="device [10]", variable=self.device_check_var[10],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=lambda : self.chart_manager(10)))
+        
+        self.device_check_var[11] = IntVar()
+        self.device_check[11] = ( Checkbutton(self.frame, text="device [11]", variable=self.device_check_var[11],
+                                    onvalue=1, offvalue=0, bg="white", state="disabled",
+                                    command=lambda : self.chart_manager(11)))
         
 
 
@@ -220,16 +221,16 @@ class ConnGUI():
 
         # self.btn_add_chart.grid(column=3, row=1, padx=self.padx)
         # self.btn_kill_chart.grid(column=3, row=2, padx=self.padx)
-        self.device_check[0].grid(column=4,  row=1, columnspan=1)
-        self.device_check[1].grid(column=6,  row=1, columnspan=1)
-        self.device_check[2].grid(column=8,  row=1, columnspan=1)
-        self.device_check[3].grid(column=10, row=1, columnspan=1)
-        self.device_check[4].grid(column=12, row=1, columnspan=1)
-        self.device_check[5].grid(column=4,  row=2, columnspan=1)
-        self.device_check[6].grid(column=6,  row=2, columnspan=1)
-        self.device_check[7].grid(column=8,  row=2, columnspan=1)
-        self.device_check[8].grid(column=10, row=2, columnspan=1)
-        self.device_check[9].grid(column=12, row=2, columnspan=1)
+        self.device_check[2].grid(column=4,  row=1, columnspan=1)
+        self.device_check[3].grid(column=6,  row=1, columnspan=1)
+        self.device_check[4].grid(column=8,  row=1, columnspan=1)
+        self.device_check[5].grid(column=10, row=1, columnspan=1)
+        self.device_check[6].grid(column=12, row=1, columnspan=1)
+        self.device_check[7].grid(column=4,  row=2, columnspan=1)
+        self.device_check[8].grid(column=6,  row=2, columnspan=1)
+        self.device_check[9].grid(column=8,  row=2, columnspan=1)
+        self.device_check[10].grid(column=10, row=2, columnspan=1)
+        self.device_check[11].grid(column=12, row=2, columnspan=1)
 
 
         self.btn_start_stream.grid(column=13, row=1, padx=self.padx)
@@ -240,58 +241,48 @@ class ConnGUI():
         self.separator.place(relx=0.30, rely=-0.1, relwidth=0.001, relheight=1.1)
         self.separator2.place(relx=0.813, rely=-0.1, relwidth=0.001, relheight=1.1)
 
-    def BoardSelectionMenu(self):
-        self.clicked_bds = StringVar()
-        bds = ["Board 1",
-            "Board 2",
-            "Board 3",
-            "Board 4",
-            "Board 5",
-            "Board 6",
-            "Board 8",
-            "Board 9",
-            "Board 9",
-            "Board 10",]
-        self.clicked_bds.set(bds[0])
-        self.drop_bds = OptionMenu(
-            self.frame, self.clicked_bds, *bds, command=self.BoardSelectionAdjust)
-        self.drop_bds.config(width=10)
+    def BoardSelectionMenu(self, arg):
+        if arg == "default":
+            self.bds = ["-"]
+            self.clicked_bds = StringVar(value=self.bds[0])
+            self.drop_bds = OptionMenu(self.frame, self.clicked_bds, *self.bds, command=self.BoardSelectionAdjust)
+            self.drop_bds.config(width=10)
+        else:
+            self.bds.append(arg)
+            self.bds[:] = [x for x in self.bds if x != "-"]
+            self.clicked_bds.set(self.bds[0])
+            self.drop_bds.destroy()
+            self.drop_bds = OptionMenu(self.frame, self.clicked_bds, *self.bds, command=self.BoardSelectionAdjust)
+            self.drop_bds.config(width=10)
 
-    def gui_sync_update(self):
-        client = "192.168.0.153"
-        self.active_devices["text"] = self.data.deviceSyncCount[client]
-        for key, value in self.data.deviceSyncStatus[client].items():
-            state = "active" if value else "disabled"
-            self.device_check[int(key) - 2]["state"] = state
+            self.drop_bds_label.grid(column=1, row=1)
+            self.drop_bds.grid(column=2, row=1, padx=(0, 40))
 
+    def gui_sync_update(self, addr):
+        self.active_devices["text"] = self.data.deviceSyncCount[addr]
+        for i in range (2,12):
+            if i in self.data.deviceSyncStatus[addr]:
+                 self.device_check[i]["state"] = "active"
+            else:
+                self.device_check[i]["state"] = "disabled"
+                if (self.device_check_var[i].get() == 1):
+                    self.device_check_var[i].set(0)
+                    self.chart_manager(i)
         pass
 
     def update_graph(self, addr, id):
-        if ( (int(id)-2) in self.device_check_active):
-            self.chartMaster.figs[self.device_check_active.index(int(id)-2)][1].clear()
+        if ( id in self.device_check_active):
+            self.chartMaster.figs[self.device_check_active.index(id)][1].clear()
             X_data = list (i for i in range (60))
-            # displayMax_Y = 0
-            # displayMin_Y = 0
-            # for i in range (8):
-            #     if (self.ControlFrames[self.chartMaster.figs.index(id-2)][1][i].get()):
-            #         d = self.data.clientsData[str(addr)][str(id)][i]
-            #         if (displayMax_Y < d.max()):
-            #             displayMax_Y = d.max()
-
-            #         if (displayMin_Y > d.min()):
-            #             displayMin_Y = d.min()
-                
-            # self.Ydisplay = np.linspace(displayMax_Y, displayMin_Y, 100)            
-            # self.Xdisplay = [i for i in range (60)]
-            self.chart = self.chartMaster.figs[self.device_check_active.index(int(id)-2)][1]
+            self.chart = self.chartMaster.figs[self.device_check_active.index(id)][1]
             for i in range (8):
-                if (self.chartMaster.ControlFrames[self.device_check_active.index(int(id)-2)][1][i].get()):
-                    Y_data = self.data.clientsData[str(addr)][id][i]
+                if (self.chartMaster.ControlFrames[self.device_check_active.index(id)][1][i].get()):
+                    Y_data = self.data.clientsData[addr][id][i]
                     self.chart.plot(X_data, Y_data, color=self.colors[i],
                         dash_capstyle='projecting', linewidth=1)
-            self.chartMaster.figs[self.device_check_active.index(int(id)-2)][1].grid(
+            self.chartMaster.figs[self.device_check_active.index(id)][1].grid(
                     color='b', linestyle='-', linewidth=0.2)
-            self.chartMaster.figs[self.device_check_active.index(int(id)-2)][0].canvas.draw()
+            self.chartMaster.figs[self.device_check_active.index(id)][0].canvas.draw()
             # for i in range (8):
             #     X_data = [i for i in range (60)]
             #     
@@ -338,15 +329,18 @@ class ConnGUI():
         self.device_check_active.sort()
         for i in range(len(self.device_check_active)):
             self.new_chart(self.device_check_active[i])
+            
+
+        
 
         if (len(self.device_check_active) == 4):
             for i in range (10):
                 if(i not in self.device_check_active):
                     self.device_check[i]["state"] = "disabled"
-        else:
-            for i in range (10):
-                self.device_check[i]["state"] = "active"
-        pass
+        # else:
+        #     # for i in range (2,12):
+        #     #     self.device_check[i]["state"] = "active"
+        # pass
 
     def new_chart(self, num):
         self.chartMaster.AddChannelMaster(num)
@@ -395,7 +389,7 @@ class displayGUI():
         
     def AddMasterFrame(self,num):
       
-        self.frames.append(LabelFrame(self.root, text=f"Device {num} [can ID: {num+2}]",
+        self.frames.append(LabelFrame(self.root, text=f"[can ID: {num}]",
                                       pady=5, padx=5, bg="white"))
         self.totalframes = len(self.frames)-1
 

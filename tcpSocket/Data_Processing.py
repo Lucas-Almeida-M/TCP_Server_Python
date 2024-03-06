@@ -27,7 +27,7 @@ class DataProcess():
         self.clientsData[str(addr)][id] = [[0] * 60 for _ in range(8)]
         pass
 
-    def process_message( self, addr, mes):
+    def process_message( self, GUI, addr, mes):
             mes = str(mes)
             if mes[0] == "@" and mes[-1] == "!":
                 match = re.search(r"@#([^\$]*)#\$([^\$]*)\$&(.*)&!", mes)
@@ -36,8 +36,10 @@ class DataProcess():
                     id = int(match.group(1))
                     MessageType = int (match.group(2))
                     data = [int(i) if self.is_number(i) else i for i in match.group(3).split("&")]
+                    if (len(data) == 1 and data[0] == ''):
+                        data.pop()
                     # print(MessageType)
-                match MessageType:
+                match (MessageType):
                     case self.MESSAGETYPE_CONFIG:
                         
                         
@@ -74,25 +76,23 @@ class DataProcess():
                             except Exception as e:
                                 print(f"Error: {e}")
                         print ("------------------------------------------")
-                        
-                        
-                        
+
+                        GUI.update_graph(addr, id)
                         pass
+
                     case self.MESSAGETYPE_SYNC:
                         if (str(addr) not in self.clientsData):
                             self.add_client(str(addr)) 
-                        self.deviceSyncCount[str(addr)] = data[0]
-                        for i in range (10):
-                            self.deviceSyncStatus[str(addr)][str(i+2)] = data[i+1]
-                            if (data[i+1]):
-                                if (int(i+2) not in self.clientsData[str(addr)]):
-                                    self.add_device_databuffer(addr, i+2)
-                                self.deviceSyncStatus[str(addr)][str(i + 2)] = data[i+1]
-                            
+                        self.deviceSyncCount[str(addr)] = len(data)
+                        self.deviceSyncStatus[str(addr)] = [] # clear the indexes
+                        for i in range (len(data)):
+                            self.deviceSyncStatus[str(addr)].append(int(data[i]))
+                            if ( data[i] not in self.clientsData[str(addr)]):
+                                self.add_device_databuffer(addr, data[i])   
+                        GUI.gui_sync_update(addr)
                         #Tem que ter um if pra saber qual board ta selecionadona dropbox
-                        # print(data)
-                        # self.GUI.active_devices["text"] = str(self.clientSyncCount[addr])
                         pass
+
                     case self.MESSAGETYPE_DISCONNECT:
                         pass
 

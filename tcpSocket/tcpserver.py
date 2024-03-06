@@ -9,7 +9,7 @@ class TCPServer:
         self.IP = "192.168.0.100"
         self.PORT = 8000
         self.ADDR = (self.IP, self.PORT)
-        self.HEADER = 64
+        self.HEADER = 128
         self.FORMAT = 'utf-8'
         self.DISCONECT_MSG = 'DISCONECT'
         self.MESSAGE_END = "!"
@@ -29,19 +29,24 @@ class TCPServer:
         print(f"New connection: {addr} connected")
         self.data.add_client(addr)
         self.data.create_client_folder(addr)
+        self.GUI.BoardSelectionMenu(str(addr))
         count = 0
         decodedMessage = []
         connected = True
         while connected:
-            msg = str(conn.recv(self.HEADER).decode(self.FORMAT))
-            print(msg)
-            if self.MESSAGE_END in msg:
-                MT, id = self.data.process_message(addr, msg)
-                match MT:
-                    case self.MESSAGETYPE_SYNC:
-                        self.GUI.gui_sync_update()
-                    case self.MESSAGETYPE_DATA:
-                        self.GUI.update_graph(addr, id)
+            try:
+                msg = str(conn.recv(self.HEADER).decode(self.FORMAT))
+                print(msg)
+                msgBuff = re.split('(?<=!)', msg)
+                for i in range (len(msgBuff) - 1):
+                    MT, id = self.data.process_message( self.GUI, addr, msgBuff[i])
+                    # match MT:
+                    #     case self.MESSAGETYPE_SYNC:
+                    #         self.GUI.gui_sync_update(addr)
+                    #     case self.MESSAGETYPE_DATA:
+                    #         self.GUI.update_graph(addr, id)
+            except:
+                pass
         conn.close()
 
     def handle_connections(self):
