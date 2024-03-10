@@ -125,6 +125,7 @@ class ConnGUI():
         self.device_check = {}
         self.device_check_var = {}
         self.device_check_active = []
+        self.saved_sensor_check_vars = {}
 
         self.device_check_var[2] = IntVar()
        
@@ -323,14 +324,17 @@ class ConnGUI():
         # Create it again 
         if (self.device_check_var[num].get()):
             self.device_check_active.append(num)
+            if num not in self.saved_sensor_check_vars:
+                self.saved_sensor_check_vars[num] = [] 
+                for i in range (8):
+                    self.saved_sensor_check_vars[num].append(IntVar())
         else:
             self.device_check_active.remove(num)
+            del self.saved_sensor_check_vars[num]
 
         self.device_check_active.sort()
         for i in range(len(self.device_check_active)):
-            self.new_chart(self.device_check_active[i])
-            
-
+            self.new_chart(self.device_check_active[i], self.saved_sensor_check_vars[self.device_check_active[i]])
         
 
         if (len(self.device_check_active) == 4):
@@ -342,8 +346,8 @@ class ConnGUI():
         #     #     self.device_check[i]["state"] = "active"
         # pass
 
-    def new_chart(self, num):
-        self.chartMaster.AddChannelMaster(num)
+    def new_chart(self, num, saved):
+        self.chartMaster.AddChannelMaster(num, saved)
         pass
 
     def kill_chart(self, num):
@@ -381,11 +385,11 @@ class displayGUI():
         # The control Frame
         self.ControlFrames = []
 
-    def AddChannelMaster(self, num):
+    def AddChannelMaster(self, num, saved):
  
         self.AddMasterFrame(num)
         self.AddGraph()
-        self.AddBtnFrame()
+        self.add_sensor_check_frame(num, saved)
         
     def AddMasterFrame(self,num):
       
@@ -440,9 +444,7 @@ class displayGUI():
         self.figs[self.totalframes][2].get_tk_widget().grid(
             column=1, row=0, columnspan=4, rowspan=17,  sticky=N)
 
-    def AddBtnFrame(self):
-        btnH = 2
-        btnW = 4
+    def add_sensor_check_frame(self, num, saved):
         self.ControlFrames.append([])
         
         self.ControlFrames[self.totalframes].append(LabelFrame(self.frames[self.totalframes],
@@ -451,15 +453,9 @@ class displayGUI():
             column=0, row=0, padx=5, pady=5,  sticky=N)
         
         self.ControlFrames[self.totalframes].append([])
-
-        self.ControlFrames[self.totalframes][1].append(IntVar())
-        self.ControlFrames[self.totalframes][1].append(IntVar())
-        self.ControlFrames[self.totalframes][1].append(IntVar())
-        self.ControlFrames[self.totalframes][1].append(IntVar())
-        self.ControlFrames[self.totalframes][1].append(IntVar())
-        self.ControlFrames[self.totalframes][1].append(IntVar())
-        self.ControlFrames[self.totalframes][1].append(IntVar())
-        self.ControlFrames[self.totalframes][1].append(IntVar())
+        
+        for i in range (8):
+            self.ControlFrames[self.totalframes][1].append(saved[i])
 
         self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 0", variable=self.ControlFrames[self.totalframes][1][0],
                                     onvalue=1, offvalue=0, bg="white", state="active",
@@ -503,6 +499,10 @@ class displayGUI():
         self.ControlFrames[self.totalframes][9].grid(
             column=1, row=7, padx=5, pady=5)
         
+    def clear_sensor_check(self, num):
+
+        pass
+
     def ButtonSensorFunc(self):
         
         pass

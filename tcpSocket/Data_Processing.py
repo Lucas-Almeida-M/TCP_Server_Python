@@ -54,7 +54,8 @@ class DataProcess():
                                 self.clientsData[str(addr)][id][i] = [int(data[i])] + self.clientsData[str(addr)][id][i][:-1]
                             else:
                                 self.clientsData[str(addr)][id][i] = [0] + self.clientsData[str(addr)][id][i][:-1]
-                            print(self.clientsData[str(addr)][id][i])
+                            # print(self.clientsData[str(addr)][id][i])
+                        print(f"Data from id {id}")
                         
                         if (self.saveData):
                             try:
