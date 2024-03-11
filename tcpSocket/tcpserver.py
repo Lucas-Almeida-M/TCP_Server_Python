@@ -37,14 +37,9 @@ class TCPServer:
             try:
                 msg = str(conn.recv(self.HEADER).decode(self.FORMAT))
                 print(msg)
-                msgBuff = re.split('(?<=!)', msg)
+                msgBuff = re.split('(?<=!)', msg) # caso ocorra de chegar mais de uma mensagem pelo protocolo tcp
                 for i in range (len(msgBuff) - 1):
-                    MT, id = self.data.process_message( self.GUI, addr, msgBuff[i])
-                    # match MT:
-                    #     case self.MESSAGETYPE_SYNC:
-                    #         self.GUI.gui_sync_update(addr)
-                    #     case self.MESSAGETYPE_DATA:
-                    #         self.GUI.update_graph(addr, id)
+                    id, boardNum = self.data.process_message( self.GUI, addr, msgBuff[i])
             except:
                 pass
         conn.close()

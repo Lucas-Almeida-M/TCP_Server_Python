@@ -7,10 +7,10 @@ import time
 
 class DataProcess():
     def __init__(self):
-        self.MESSAGETYPE_CONFIG     = 0
-        self.MESSAGETYPE_DATA       = 1
-        self.MESSAGETYPE_SYNC       = 2
-        self.MESSAGETYPE_DISCONNECT = 3
+        self.SYNC       = 0
+        self.DATA       = 2
+        self.CONFIG     = 3
+
         self.saveData = 0
         self.deviceSyncStatus = {}
         self.deviceSyncCount = {}
@@ -31,62 +31,63 @@ class DataProcess():
             mes = str(mes)
             if mes[0] == "@" and mes[-1] == "!":
                 match = re.search(r"@#([^\$]*)#\$([^\$]*)\$&(.*)&!", mes)
-                # match = re.search(r"@\$([^\$]*)\$&(.*)&!", mes)
                 if match:
                     id = int(match.group(1))
-                    MessageType = int (match.group(2))
+                    boardNum = int (match.group(2))
                     data = [int(i) if self.is_number(i) else i for i in match.group(3).split("&")]
                     if (len(data) == 1 and data[0] == ''):
                         data.pop()
                     # print(MessageType)
-                match (MessageType):
-                    case self.MESSAGETYPE_CONFIG:
+                match (id):
+                    case self.CONFIG:
                         
                         
                         pass
-                    case self.MESSAGETYPE_DATA:
+                    case self.DATA:
 
-                        if (id not in self.clientsData[str(addr)]):
-                            self.add_device_databuffer(str(addr), id)
-                        print ("------------------------------------------")
+                        if (boardNum not in self.clientsData[str(addr)]):
+                            self.add_device_databuffer(str(addr), boardNum)
+                        # print ("------------------------------------------")
                         for i in range(8):
                             if data[i] != 'null':
-                                self.clientsData[str(addr)][id][i] = [int(data[i])] + self.clientsData[str(addr)][id][i][:-1]
+                                self.clientsData[str(addr)][boardNum][i] = [int(data[i])] + self.clientsData[str(addr)][boardNum][i][:-1]
                             else:
-                                self.clientsData[str(addr)][id][i] = [0] + self.clientsData[str(addr)][id][i][:-1]
+                                self.clientsData[str(addr)][boardNum][i] = [0] + self.clientsData[str(addr)][boardNum][i][:-1]
                             # print(self.clientsData[str(addr)][id][i])
-                        print(f"Data from id {id}")
+                        # print(f"Data from board {boardNum}")
                         
                         if (self.saveData):
                             try:
-                                file_path = f"client_{str(addr)}/base_de_dados_id_{str(id)}.csv"
+                                file_path = f"client_{str(addr)}/base_de_dados_id_{str(boardNum)}.csv"
                                 with open(file_path, 'a', newline='') as csv_file:
                                     csv_writer = csv.writer(csv_file)
 
                                     # If the file is empty, write the header
                                     if csv_file.tell() == 0:
-                                        fieldnames = ['time', 'device_id', 'sensor_0', 'sensor_1', 'sensor_2', 'sensor_3', 'sensor_4', 'sensor_5', 'sensor_6', 'sensor_7']
+                                        fieldnames = ['time', 'board_Num', 'sensor_0', 'sensor_1', 'sensor_2', 'sensor_3', 'sensor_4', 'sensor_5', 'sensor_6', 'sensor_7']
                                         csv_writer.writerow(fieldnames)
 
                                     # Append a new line for each set of values
                                     
-                                    buffer = [time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(id) ] + list(map(lambda x: int(x) if self.is_number(x) else "-", data))
+                                    buffer = [time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(boardNum) ] + list(map(lambda x: int(x) if self.is_number(x) else "-", data))
                                     
                                     csv_writer.writerow(buffer)
 
                             except Exception as e:
                                 print(f"Error: {e}")
-                        print ("------------------------------------------")
+                        # print ("------------------------------------------")
 
-                        GUI.update_graph(addr, id)
+                        GUI.update_graph(addr, boardNum)
                         pass
 
-                    case self.MESSAGETYPE_SYNC:
+                    case self.SYNC:
                         if (str(addr) not in self.clientsData):
                             self.add_client(str(addr)) 
                         self.deviceSyncCount[str(addr)] = len(data)
                         self.deviceSyncStatus[str(addr)] = [] # clear the indexes
+                        print(f"_________ devices sync {self.deviceSyncCount[str(addr)]}_____________ ")
                         for i in range (len(data)):
+                            print(f"--{data[i]}--")
                             self.deviceSyncStatus[str(addr)].append(int(data[i]))
                             if ( data[i] not in self.clientsData[str(addr)]):
                                 self.add_device_databuffer(addr, data[i])   
@@ -97,9 +98,10 @@ class DataProcess():
                     case self.MESSAGETYPE_DISCONNECT:
                         pass
 
-                return MessageType, id 
+                return id, boardNum 
             else:
                 return -1  # Error message  
+            
     def is_number(self, num):
         try:
             int(num)  # or int(s) for integers
