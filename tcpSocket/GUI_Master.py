@@ -2,18 +2,11 @@ import os
 import signal
 import numpy as np
 from tkinter import *
-from tkinter import messagebox
 from tkinter import ttk
 import re
-import socket
-import threading
-
-import matplotlib.pyplot as plt  # pip install matplotlib
+import matplotlib.pyplot as plt 
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
                                                NavigationToolbar2Tk)
-
-
-
 
 class RootGUI():
     def __init__(self):
@@ -34,7 +27,6 @@ class RootGUI():
 class ComGUI():
     
     def __init__(self, root, tcp, data):
-        # Initializing the Widgets
         self.root = root
         self.tcp = tcp
         self.data = data
@@ -47,16 +39,12 @@ class ComGUI():
 
 
         self.ServerIPOptionMenu()
-
-        # Add the control buttons for refreshing the COMs & Connect
         self.btn_connect = Button(self.frame, text="Start Server",
                                   width=10, state="active",  command=self.tcp_connect)
 
-        # Optional Graphic parameters
         self.padx = 20
         self.pady = 5
 
-        # Put on the grid all the elements
         self.publish()
 
     def publish(self):
@@ -67,7 +55,6 @@ class ComGUI():
 
         self.IPselect.grid(column=2, row=2, padx=self.padx, pady=self.pady)
         self.Portselect.grid(column=2, row=3, padx=self.padx, pady=self.pady)
-        # self.drop_com.grid(column=2, row=2, padx=self.padx)
 
         self.btn_connect.grid(column=3, row=2)
 
@@ -98,11 +85,6 @@ class ComGUI():
             return True
         else:
             return False
-
-
-
-        
-
 
 class ConnGUI():
     def __init__(self, root, tcp, data) :
@@ -180,13 +162,8 @@ class ConnGUI():
         
 
 
-        self.btn_start_stream = Button(self.frame, text="Start", state="active",
-                                    width=5, command=self.new_chart)
-
-        self.btn_stop_stream = Button(self.frame, text="Stop", state="active",
-                                    width=5, command=self.kill_chart)
-        # self.btn_stop_stream = Button(self.frame, text="Stop", state="disabled",
-        #                             width=5, command=self.stop_stream)
+        self.btn_options = Button(self.frame, text="Options", state="disabled",
+                                    width=7, command=self.new_chart)
         
         self.save = False
         self.SaveVar = IntVar()
@@ -197,20 +174,15 @@ class ConnGUI():
         self.separator = ttk.Separator(self.frame, orient='vertical')
         self.separator2 = ttk.Separator(self.frame, orient='vertical')
         
-        # Optional Graphic parameters
         self.padx = (40,5)
         self.pady = (40,5)
 
-        # Extending the GUI
         self.ConnGUIOpen()
         self.chartMaster = displayGUI(self.root, self.tcp, self.data)
 
         
     def ConnGUIOpen(self):
-        '''
-        Method to display all the widgets 
-        '''
-        # self.root.geometry("1080x720")
+
         self.frame.grid(row=0, column=3, rowspan=3,
                         columnspan=18, padx=5, pady=5, sticky='nsew')
 
@@ -220,8 +192,6 @@ class ConnGUI():
         self.active_devices_label.grid(column=1, row=2)
         self.active_devices.grid(column=2, row=2,pady= 5, padx=(0, 40))
 
-        # self.btn_add_chart.grid(column=3, row=1, padx=self.padx)
-        # self.btn_kill_chart.grid(column=3, row=2, padx=self.padx)
         self.device_check[2].grid(column=4,  row=1, columnspan=1)
         self.device_check[3].grid(column=6,  row=1, columnspan=1)
         self.device_check[4].grid(column=8,  row=1, columnspan=1)
@@ -233,13 +203,9 @@ class ConnGUI():
         self.device_check[10].grid(column=10, row=2, columnspan=1)
         self.device_check[11].grid(column=12, row=2, columnspan=1)
 
-
-        self.btn_start_stream.grid(column=13, row=1, padx=self.padx)
-        self.btn_stop_stream.grid(column=13, row=2, padx=self.padx)
-
+        self.btn_options.grid(column=13, row=1, padx=self.padx)
         self.save_check.grid(column=14, row=1, columnspan=2)
-        # self.separator.place(relx=0.65, rely=0, relwidth=0.001, relheight=1)
-        self.separator.place(relx=0.30, rely=-0.1, relwidth=0.001, relheight=1.1)
+        self.separator.place(relx=0.285, rely=-0.1, relwidth=0.001, relheight=1.1)
         self.separator2.place(relx=0.813, rely=-0.1, relwidth=0.001, relheight=1.1)
 
     def BoardSelectionMenu(self, arg):
@@ -284,10 +250,6 @@ class ConnGUI():
             self.chartMaster.figs[self.device_check_active.index(id)][1].grid(
                     color='b', linestyle='-', linewidth=0.2)
             self.chartMaster.figs[self.device_check_active.index(id)][0].canvas.draw()
-            # for i in range (8):
-            #     X_data = [i for i in range (60)]
-            #     
-            
 
         pass
 
@@ -358,7 +320,6 @@ class ConnGUI():
                 self.chartMaster.frames.pop()
                 self.chartMaster.figs.pop()
                 self.chartMaster.ControlFrames.pop()
-                # self.chartMaster.AdjustRootFrame()
         except:
             pass
 
@@ -429,15 +390,12 @@ class displayGUI():
         self.root.geometry(f"{RootW}x{RootH}")
 
     def AddGraph(self):
-
-        # Setting up the plot for the each Frame
         self.figs.append([])
-        # Initialize figures
+
         self.figs[self.totalframes].append(plt.Figure(figsize=(8, 5), dpi=80))
-        # Initialize the plot
         self.figs[self.totalframes].append(
             self.figs[self.totalframes][0].add_subplot(111))
-        # Initialize the chart
+
         self.figs[self.totalframes].append(FigureCanvasTkAgg(
             self.figs[self.totalframes][0], master=self.frames[self.totalframes]))
 

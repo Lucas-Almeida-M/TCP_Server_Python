@@ -1,6 +1,5 @@
 import re
 import numpy as np
-import matplotlib
 import csv
 import os
 import time
@@ -31,7 +30,6 @@ class DataProcess():
             mes = str(mes)
             if mes[0] == "@" and mes[-1] == "!":
                 match = re.search(r"@#([^\$]*)#\$([^\$]*)\$&(.*)&!", mes)
-                # match = re.search(r"@\$([^\$]*)\$&(.*)&!", mes)
                 if match:
                     id = int(match.group(1))
                     MessageType = int (match.group(2))
@@ -63,12 +61,9 @@ class DataProcess():
                                 with open(file_path, 'a', newline='') as csv_file:
                                     csv_writer = csv.writer(csv_file)
 
-                                    # If the file is empty, write the header
                                     if csv_file.tell() == 0:
                                         fieldnames = ['time', 'device_id', 'sensor_0', 'sensor_1', 'sensor_2', 'sensor_3', 'sensor_4', 'sensor_5', 'sensor_6', 'sensor_7']
                                         csv_writer.writerow(fieldnames)
-
-                                    # Append a new line for each set of values
                                     
                                     buffer = [time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()), str(id) ] + list(map(lambda x: int(x) if self.is_number(x) else "-", data))
                                     
@@ -91,7 +86,7 @@ class DataProcess():
                             if ( data[i] not in self.clientsData[str(addr)]):
                                 self.add_device_databuffer(addr, data[i])   
                         GUI.gui_sync_update(addr)
-                        #Tem que ter um if pra saber qual board ta selecionadona dropbox
+                     
                         pass
 
                     case self.MESSAGETYPE_DISCONNECT:
@@ -99,10 +94,10 @@ class DataProcess():
 
                 return MessageType, id 
             else:
-                return -1  # Error message  
+                return -1  
     def is_number(self, num):
         try:
-            int(num)  # or int(s) for integers
+            int(num)  
             return True
         except ValueError:
             return False

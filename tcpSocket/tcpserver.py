@@ -1,6 +1,5 @@
 import socket
 import threading
-import time
 import re
 
 
@@ -39,12 +38,7 @@ class TCPServer:
                 print(msg)
                 msgBuff = re.split('(?<=!)', msg)
                 for i in range (len(msgBuff) - 1):
-                    MT, id = self.data.process_message( self.GUI, addr, msgBuff[i])
-                    # match MT:
-                    #     case self.MESSAGETYPE_SYNC:
-                    #         self.GUI.gui_sync_update(addr)
-                    #     case self.MESSAGETYPE_DATA:
-                    #         self.GUI.update_graph(addr, id)
+                    self.data.process_message( self.GUI, addr, msgBuff[i])
             except:
                 pass
         conn.close()
@@ -76,10 +70,3 @@ class TCPServer:
 if __name__ == "__main__":
     server = TCPServer(socket.gethostbyname(socket.gethostname()), 5050)
     server.start()
-
-
-# self.tcpserver = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# self.tcpserver.bind(self.ADDR)
-# threadServer = threading.Thread(target=self.start())
-# threadServer.start()
-
