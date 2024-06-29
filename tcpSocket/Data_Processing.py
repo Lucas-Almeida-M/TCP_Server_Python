@@ -6,19 +6,22 @@ import time
 
 class DataProcess():
     def __init__(self):
-        self.MESSAGETYPE_CONFIG     = 0
+        self.MESSAGETYPE_SYNC       = 0
         self.MESSAGETYPE_DATA       = 1
-        self.MESSAGETYPE_SYNC       = 2
-        self.MESSAGETYPE_DISCONNECT = 3
+        self.MESSAGETYPE_CONFIG     = 2
+        self.MESSAGETYPE_STATUS     = 3
+        self.MESSAGETYPE_REBOOT     = 4
+
         self.saveData = 0
-        self.deviceSyncStatus = {}
+        self.DeviceStatus = {}
+        self.deviceSync = {}
         self.deviceSyncCount = {}
         self.clientsData = {}
         pass
     
     def add_client(self, addr):
         self.clientsData[str(addr)] = {}
-        self.deviceSyncStatus[str(addr)] = {}
+        self.deviceSync[str(addr)] = {}
         self.deviceSyncCount[str(addr)] = 0
         pass
     
@@ -38,10 +41,6 @@ class DataProcess():
                         data.pop()
                     # print(MessageType)
                 match (MessageType):
-                    case self.MESSAGETYPE_CONFIG:
-                        
-                        
-                        pass
                     case self.MESSAGETYPE_DATA:
 
                         if (id not in self.clientsData[str(addr)]):
@@ -80,17 +79,27 @@ class DataProcess():
                         if (str(addr) not in self.clientsData):
                             self.add_client(str(addr)) 
                         self.deviceSyncCount[str(addr)] = len(data)
-                        self.deviceSyncStatus[str(addr)] = [] # clear the indexes
+                        self.deviceSync[str(addr)] = [] 
                         for i in range (len(data)):
-                            self.deviceSyncStatus[str(addr)].append(int(data[i]))
+                            self.deviceSync[str(addr)].append(int(data[i]))
                             if ( data[i] not in self.clientsData[str(addr)]):
                                 self.add_device_databuffer(addr, data[i])   
                         GUI.gui_sync_update(addr)
                      
                         pass
 
-                    case self.MESSAGETYPE_DISCONNECT:
+                    case self.MESSAGETYPE_STATUS:
+                        if str(addr) not in self.DeviceStatus:
+                            self.DeviceStatus[str(addr)] = {}
+                        if str(id) not in self.DeviceStatus[str(addr)]:
+                            self.DeviceStatus[str(addr)][str(id)] = {}
+                        self.DeviceStatus[str(addr)][str(id)]['sensortype'] = data[0]
+                        self.DeviceStatus[str(addr)][str(id)]['internalTemp'] = data[1]
+                        self.DeviceStatus[str(addr)][str(id)]['transmissionErrors'] = data[2]
+                        self.DeviceStatus[str(addr)][str(id)]['runtime'] = data[3]
+                        
                         pass
+
 
                 return MessageType, id 
             else:

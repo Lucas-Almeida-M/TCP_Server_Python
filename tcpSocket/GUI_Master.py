@@ -66,18 +66,21 @@ class ComGUI():
         self.Portselect.insert(0,"8000")
 
     def tcp_connect(self):
-        ip = self.IPselect.get()
-        port = int (self.Portselect.get())
-        if self.is_valid_ip_format(ip) and (( port > 0) and (port< 65535 )):
-            print(f"TRYING TO CONNECT TO SERVER  IP {ip} port {port}")
-            try:
-                self.conn = ConnGUI(self.root, self.tcp, self.data)
-                self.btn_connect["text"] = "Started"
-                self.btn_connect["state"] = "disabled"
-                
-                self.tcp.start(ip, port, self.conn, self.data)
-            except:
-                pass
+        if (self.btn_connect['text'] == 'Start Server'):
+            ip = self.IPselect.get()
+            port = int (self.Portselect.get())
+            if self.is_valid_ip_format(ip) and (( port > 1000) and (port< 65535 )):
+                print(f"TRYING TO CONNECT TO SERVER  IP {ip} port {port}")
+                try:
+                    self.conn = ConnGUI(self.root, self.tcp, self.data)
+                    self.tcp.start(ip, port, self.conn, self.data)
+                    self.btn_connect['text'] = "Stop Server"
+                except Exception as e:
+                    print(f"Error: {e}")
+        else:
+            self.tcp.stop()
+            self.conn.frame.destroy()
+            self.btn_connect["text"] = "Start Server"
 
     def is_valid_ip_format(self,input_string):
         ip_pattern = re.compile(r'^(\d{1,3}\.){3}\d{1,3}$')
@@ -91,6 +94,7 @@ class ConnGUI():
         self.root = root
         self.tcp = tcp
         self.data = data
+        self.board = 0
         self.colors = ["blue","orange","green","red","purple","brown","pink","yellow"]
         self.frame = LabelFrame(root, text="Connection Manager",
                             padx=5, pady=5, bg="white", width=60)
@@ -178,7 +182,9 @@ class ConnGUI():
         self.pady = (40,5)
 
         self.ConnGUIOpen()
-        self.chartMaster = displayGUI(self.root, self.tcp, self.data)
+
+        
+        self.chartMaster = displayGUI(self.root, self.tcp, self.data, self)
 
         
     def ConnGUIOpen(self):
@@ -228,7 +234,7 @@ class ConnGUI():
     def gui_sync_update(self, addr):
         self.active_devices["text"] = self.data.deviceSyncCount[addr]
         for i in range (2,12):
-            if i in self.data.deviceSyncStatus[addr]:
+            if i in self.data.deviceSync[addr]:
                  self.device_check[i]["state"] = "active"
             else:
                 self.device_check[i]["state"] = "disabled"
@@ -247,6 +253,8 @@ class ConnGUI():
                     Y_data = self.data.clientsData[addr][id][i]
                     self.chart.plot(X_data, Y_data, color=self.colors[i],
                         dash_capstyle='projecting', linewidth=1)
+            self.chart.set_xlabel('Temperatura')
+            self.chart.set_ylabel('Tempo')
             self.chartMaster.figs[self.device_check_active.index(id)][1].grid(
                     color='b', linestyle='-', linewidth=0.2)
             self.chartMaster.figs[self.device_check_active.index(id)][0].canvas.draw()
@@ -331,10 +339,13 @@ class ConnGUI():
 
 
 class displayGUI():
-    def __init__(self, root, tcp, data) :
+    def __init__(self, root, tcp, data, conn) :
         self.root = root
         self.tcp = tcp
         self.data = data
+        self.conn = conn
+
+        self.sensortypes = ['Temperatura','Tensão','Pressão']
 
         self.frames = []
         self.framesCol = 0
@@ -439,6 +450,44 @@ class displayGUI():
         self.ControlFrames[self.totalframes].append( Checkbutton(self.ControlFrames[self.totalframes][0], text="Sensor 7", variable=self.ControlFrames[self.totalframes][1][7],
                                     onvalue=1, offvalue=0, bg="white", state="active",
                                     command=self.ButtonSensorFunc))
+        self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="Config", state="active",
+                                    width=7, command=lambda : self.device_config(num)))
+        self.ControlFrames[self.totalframes].append(Button(self.ControlFrames[self.totalframes][0], text="Status", state="active",
+                                    width=7, command=lambda : self.device_status(num)))
+        
+        canvas = []
+        canvas.append(Canvas(self.ControlFrames[self.totalframes][0], width=10, height=10))
+        canvas[0].create_rectangle(0, 10, 10, 0, fill=self.conn.colors[0])
+
+        canvas.append(Canvas(self.ControlFrames[self.totalframes][0], width=10, height=10))
+        canvas[1].create_rectangle(0, 10, 10, 0, fill=self.conn.colors[1])
+
+        canvas.append(Canvas(self.ControlFrames[self.totalframes][0], width=10, height=10))
+        canvas[2].create_rectangle(0, 10, 10, 0, fill=self.conn.colors[2])
+
+        canvas.append(Canvas(self.ControlFrames[self.totalframes][0], width=10, height=10))
+        canvas[3].create_rectangle(0, 10, 10, 0, fill=self.conn.colors[3])
+
+        canvas.append(Canvas(self.ControlFrames[self.totalframes][0], width=10, height=10))
+        canvas[4].create_rectangle(0, 10, 10, 0, fill=self.conn.colors[4])
+
+        canvas.append(Canvas(self.ControlFrames[self.totalframes][0], width=10, height=10))
+        canvas[5].create_rectangle(0, 10, 10, 0, fill=self.conn.colors[5])
+
+        canvas.append(Canvas(self.ControlFrames[self.totalframes][0], width=10, height=10))
+        canvas[6].create_rectangle(0, 10, 10, 0, fill=self.conn.colors[6])
+
+        canvas.append(Canvas(self.ControlFrames[self.totalframes][0], width=10, height=10))
+        canvas[7].create_rectangle(0, 10, 10, 0, fill=self.conn.colors[7])
+
+        canvas[0].grid(column=2, row=0, padx=5, pady=5)
+        canvas[1].grid(column=2, row=1, padx=5, pady=5)
+        canvas[2].grid(column=2, row=2, padx=5, pady=5)
+        canvas[3].grid(column=2, row=3, padx=5, pady=5)
+        canvas[4].grid(column=2, row=4, padx=5, pady=5)
+        canvas[5].grid(column=2, row=5, padx=5, pady=5)
+        canvas[6].grid(column=2, row=6, padx=5, pady=5)
+        canvas[7].grid(column=2, row=7, padx=5, pady=5)
         
         self.ControlFrames[self.totalframes][2].grid(
             column=1, row=0, padx=5, pady=5)
@@ -456,7 +505,74 @@ class displayGUI():
             column=1, row=6, padx=5, pady=5)
         self.ControlFrames[self.totalframes][9].grid(
             column=1, row=7, padx=5, pady=5)
+        self.ControlFrames[self.totalframes][10].grid(
+            column=1, row=8, padx=5, pady=5)
+        self.ControlFrames[self.totalframes][11].grid(
+            column=1, row=9, padx=5, pady=5)
         
+
+    def device_config(self, id):
+        # print('config')
+        self.extra_window = Toplevel()
+        self.extra_window.title = 'Config'
+        self.extra_window.geometry ('250x100')
+        
+        self.id_label = Label(self.extra_window, text="ID : ", bg="white", width=15, anchor="w")
+        self.sensors_enabled_label = Label(self.extra_window, text="Sensors Enabled : ", bg="white", width=15, anchor="w")
+        self.id_selected = Entry(self.extra_window, width=30)
+        self.sensors_enabled_selected = Entry(self.extra_window, width=30)
+
+        self.id_selected.insert(0, id)
+        self.sensors_enabled_selected.insert(0,"teste")
+
+        self.button_config = Button(self.extra_window, text="Apply Config", state="active", width=10, command=self.applyconfig)
+
+        self.id_label.grid(column=0, row=0, padx=5, pady=5)
+        self.sensors_enabled_label.grid(column=0, row=1, padx=5, pady=5)
+        self.id_selected.grid(column=1, row=0, padx=5, pady=5)
+        self.sensors_enabled_selected.grid(column=1, row=1, padx=5, pady=5)
+        self.button_config.grid(column=0, row=2, padx=5, pady=5)
+       
+        pass
+
+    def applyconfig (self):
+        message_type = self.data.MESSAGETYPE_CONFIG 
+        changed_id = self.id_selected.get()
+        sensors_active = self.sensors_enabled_selected.get()
+
+        msg = f"@#{id}#${message_type}$&{changed_id}&{sensors_active}&!"
+        self.tcp.send_message(msg, self.board)
+
+        pass
+
+    def device_status(self, id):
+        self.extra_window = Toplevel()
+        self.extra_window.title = 'Config'
+        self.extra_window.geometry ('250x200')
+
+        sens_hab = Label(self.extra_window, text="Tipo de sensor : ", bg="white", width=15, anchor="w")
+        sens_hab_text = Label(self.extra_window, text=self.sensortypes[self.data.DeviceStatus[self.conn.board][str(id)]['sensortype']], bg="white", width=15, anchor="w")
+
+        intern_temp = Label(self.extra_window, text="Temperatura Interna [C]: ", bg="white", width=15, anchor="w")
+        intern_temp_text = Label(self.extra_window, text=self.data.DeviceStatus[self.conn.board][str(id)]['internalTemp'], bg="white", width=15, anchor="w")
+
+        trans_error = Label(self.extra_window, text="Erros de transmissão : ", bg="white", width=15, anchor="w")
+        trans_error_text = Label(self.extra_window, text=self.data.DeviceStatus[self.conn.board][str(id)]['transmissionErrors'], bg="white", width=15, anchor="w")
+
+        temp_func = Label(self.extra_window, text="Tempo de funcionamento [h] : ", bg="white", width=15, anchor="w")
+        temp_func_text = Label(self.extra_window, text=self.data.DeviceStatus[self.conn.board][str(id)]['runtime'], bg="white", width=15, anchor="w")
+
+        sens_hab.grid(column=0, row=0, padx=5, pady=5)
+        sens_hab_text.grid(column=1, row=0, padx=5, pady=5)
+        intern_temp.grid(column=0, row=1, padx=5, pady=5)
+        intern_temp_text.grid(column=1, row=1, padx=5, pady=5)
+        trans_error.grid(column=0, row=2, padx=5, pady=5)
+        trans_error_text.grid(column=1, row=2, padx=5, pady=5)
+        temp_func.grid(column=0, row=3, padx=5, pady=5)
+        temp_func_text.grid(column=1, row=3, padx=5, pady=5)
+
+        pass
+
     def clear_sensor_check(self, num):
 
         pass
