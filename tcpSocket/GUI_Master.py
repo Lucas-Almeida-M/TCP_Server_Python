@@ -11,8 +11,8 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
 class RootGUI():
     def __init__(self):
         self.root = Tk()
-        self.root.title("Data vizualizer")
-        self.root.geometry("1500x1000")
+        self.root.title("Supervisório")
+        self.root.geometry("1600x1000")
         self.root.config(bg="white")
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -30,7 +30,7 @@ class ComGUI():
         self.root = root
         self.tcp = tcp
         self.data = data
-        self.frame = LabelFrame(root, text="Tcp Socket",
+        self.frame = LabelFrame(root, text="Servidor",
                                 padx=5, pady=5, bg="white")
         self.server_ip = Label(
             self.frame, text="Server IP: ", bg="white", width=15, anchor="w")
@@ -96,7 +96,7 @@ class ConnGUI():
         self.data = data
         self.board = 0
         self.colors = ["blue","orange","green","red","purple","brown","pink","yellow"]
-        self.frame = LabelFrame(root, text="Connection Manager",
+        self.frame = LabelFrame(root, text="Cliente",
                             padx=5, pady=5, bg="white", width=60)
         self.bds = []
         self.drop_bds_label = Label(
@@ -253,8 +253,9 @@ class ConnGUI():
                     Y_data = self.data.clientsData[addr][id][i]
                     self.chart.plot(X_data, Y_data, color=self.colors[i],
                         dash_capstyle='projecting', linewidth=1)
-            self.chart.set_xlabel('Temperatura')
-            self.chart.set_ylabel('Tempo')
+            self.chart.set_xlabel('Tempo[s]')
+            self.chart.set_ylabel('Temperatura[ºC]')
+            self.chart.set_ylim([0, 50])
             self.chartMaster.figs[self.device_check_active.index(id)][1].grid(
                     color='b', linestyle='-', linewidth=0.2)
             self.chartMaster.figs[self.device_check_active.index(id)][0].canvas.draw()
@@ -559,7 +560,7 @@ class displayGUI():
         trans_error = Label(self.extra_window, text="Erros de transmissão : ", bg="white", width=15, anchor="w")
         trans_error_text = Label(self.extra_window, text=self.data.DeviceStatus[self.conn.board][str(id)]['transmissionErrors'], bg="white", width=15, anchor="w")
 
-        temp_func = Label(self.extra_window, text="Tempo de funcionamento [h] : ", bg="white", width=15, anchor="w")
+        temp_func = Label(self.extra_window, text="Uptime [h] : ", bg="white", width=15, anchor="w")
         temp_func_text = Label(self.extra_window, text=self.data.DeviceStatus[self.conn.board][str(id)]['runtime'], bg="white", width=15, anchor="w")
 
         sens_hab.grid(column=0, row=0, padx=5, pady=5)
